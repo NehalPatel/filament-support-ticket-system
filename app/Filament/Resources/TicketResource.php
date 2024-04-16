@@ -17,6 +17,7 @@ use Filament\Tables\Columns\TextInputColumn;
 use App\Filament\Resources\TicketResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TicketResource\RelationManagers;
+use App\Filament\Resources\TicketResource\RelationManagers\CategoriesRelationManager;
 
 class TicketResource extends Resource
 {
@@ -35,11 +36,13 @@ class TicketResource extends Resource
                 Textarea::make('description')
                     ->rows(3),
                 Select::make('status')
-                    ->options(Ticket::STATUS)
-                    ->required(),
+                    ->options(self::$model::STATUS)
+                    ->required()
+                    ->in(self::$model::STATUS),
                 Select::make('priority')
                     ->options(Ticket::PRIORITY)
-                    ->required(),
+                    ->required()
+                    ->in(self::$model::PRIORITY),
                 Select::make('assigned_to')
                     ->relationship('assignedTo', 'name'),
                 Textarea::make('comment')
@@ -82,7 +85,7 @@ class TicketResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            CategoriesRelationManager::class
         ];
     }
 
