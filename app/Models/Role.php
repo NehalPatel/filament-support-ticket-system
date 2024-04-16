@@ -12,8 +12,8 @@ class Role extends Model
     protected $fillable = ['name'];
 
     const ROLES = [
-        'Admin' => 'Admin',
-        'Agent' => 'Agent',
+        'Admin' => 'Admin Role',
+        'Agent' => 'Agent Role',
     ];
 
     public function permissions()
