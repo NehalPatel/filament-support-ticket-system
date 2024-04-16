@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Models\Role;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Ticket;
@@ -44,7 +46,12 @@ class TicketResource extends Resource
                     ->required()
                     ->in(self::$model::PRIORITY),
                 Select::make('assigned_to')
-                    ->relationship('assignedTo', 'name'),
+                    ->options(
+                        User::whereHas('roles', function (Builder $query) {
+                            $query->where('name', Role::ROLES['Agent']);
+                        })->pluck('name', 'id')->toArray()
+                    ),
+                    // ->relationship('assignedTo', 'name'),
                 Textarea::make('comment')
                     ->rows(3),
             ]);
@@ -55,7 +62,7 @@ class TicketResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('title')
-                    ->description(fn(Ticket $record) : string => $record->description)
+                    ->description(fn(Ticket $record) : ?string => $record?->description ?? null)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('status')->badge(),
@@ -67,10 +74,22 @@ class TicketResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextInputColumn::make('comment')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->disabled(!auth()->user()->hasPermission('ticket_edit')),
+                TextColumn::make('created_at')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->dateTime()
+                    ->sortable()
             ])
+            ->defaultSort('created_at', 'desc')
+            ->modifyQueryUsing(fn (Builder $query): Builder =>
+                auth()->user()->hasRole(Role::ROLES['Admin']) ? $query : $query->where('assigned_to', auth()->id())
+            ) //load all tickets if user has Admin role
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options(self::$model::STATUS),
+                Tables\Filters\SelectFilter::make('priority')
+                    ->options(self::$model::PRIORITY),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -78,7 +97,8 @@ class TicketResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->hidden(!auth()->user()->hasPermission('ticket_delete')),
                 ]),
             ]);
     }

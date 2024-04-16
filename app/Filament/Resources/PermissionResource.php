@@ -19,7 +19,9 @@ class PermissionResource extends Resource
 {
     protected static ?string $model = Permission::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-finger-print';
+
+    protected static ?string $navigationGroup = 'Access Control';
 
     public static function form(Form $form): Form
     {
@@ -48,7 +50,8 @@ class PermissionResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->hidden(!auth()->user()->hasPermission('permission_delete')),
                 ]),
             ]);
     }

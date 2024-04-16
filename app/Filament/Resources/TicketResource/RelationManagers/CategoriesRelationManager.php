@@ -2,13 +2,12 @@
 
 namespace App\Filament\Resources\TicketResource\RelationManagers;
 
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class CategoriesRelationManager extends RelationManager
 {
@@ -38,6 +37,9 @@ class CategoriesRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\AttachAction::make()
+                    ->recordSelectOptionsQuery(function(Builder $query){
+                        return $query->active();
+                    })
                     ->preloadRecordSelect(),
             ])
             ->actions([
