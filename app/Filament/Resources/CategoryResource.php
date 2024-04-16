@@ -53,7 +53,8 @@ class CategoryResource extends Resource
                 TextColumn::make('slug')
                     ->sortable()
                     ->searchable(),
-                ToggleColumn::make('is_active'),
+                ToggleColumn::make('is_active')
+                    ->disabled(!auth()->user()->hasPermission('category_edit')),
             ])
             ->filters([
                 //

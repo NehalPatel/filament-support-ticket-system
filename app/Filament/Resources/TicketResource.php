@@ -66,7 +66,8 @@ class TicketResource extends Resource
                 TextColumn::make('assignedBy.name')
                     ->searchable()
                     ->sortable(),
-                TextInputColumn::make('comment'),
+                TextInputColumn::make('comment')
+                    ->disabled(!auth()->user()->hasPermission('ticket_edit')),
             ])
             ->filters([
                 //
