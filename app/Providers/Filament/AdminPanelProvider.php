@@ -27,7 +27,17 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->colors([
+                'danger' => Color::Rose,
+                'gray' => Color::Gray,
+                'info' => Color::Blue,
+                'primary' => Color::Indigo,
+                'success' => Color::Emerald,
+                'warning' => Color::Orange,
+            ])
+            ->font('Poppins')
             ->sidebarCollapsibleOnDesktop()
+            ->databaseNotifications(true)
             ->colors([
                 'primary' => Color::Amber,
             ])

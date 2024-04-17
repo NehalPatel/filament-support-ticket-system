@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Models\Role;
 use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
 use Filament\Tables;
 use App\Models\Ticket;
 use Filament\Forms\Form;
@@ -25,7 +26,7 @@ class TicketResource extends Resource
 {
     protected static ?string $model = Ticket::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-ticket';
 
     public static function form(Form $form): Form
     {
@@ -54,6 +55,8 @@ class TicketResource extends Resource
                     // ->relationship('assignedTo', 'name'),
                 Textarea::make('comment')
                     ->rows(3),
+                FileUpload::make('attachment')
+                    ->multiple()
             ]);
     }
 
