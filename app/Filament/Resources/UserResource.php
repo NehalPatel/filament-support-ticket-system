@@ -6,14 +6,17 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Filament\Resources\UserResource\RelationManagers\RolesRelationManager;
 use App\Models\User;
+use App\Services\TextMessageService;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
@@ -63,6 +66,27 @@ class UserResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('sendBulkSms')
+                        ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                        ->color('warning')
+                        ->form([
+                            Forms\Components\Textarea::make('message')
+                                ->required()
+                                ->autofocus()
+                                ->rows(4)
+                                ->maxLength(255)
+                                ->placeholder('Enter your message here'),
+                            Forms\Components\Textarea::make('remarks'),
+                        ])
+                        ->modalSubmitActionLabel('Send SMS')
+                        ->action(function (array $data, Collection $records){
+                            TextMessageService::sendBulkSms($data, $records);
+
+                            Notification::make()
+                                ->title('SMS sent successfully')
+                                ->success()
+                                ->send();
+                        }),
                     Tables\Actions\DeleteBulkAction::make()
                         ->hidden(!auth()->user()->hasPermission('user_delete')),
                 ]),
