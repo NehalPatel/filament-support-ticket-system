@@ -8,6 +8,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Ticket;
 use Filament\Forms\Form;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
@@ -18,7 +19,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\TextInputColumn;
 use App\Filament\Resources\TicketResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\TicketResource\RelationManagers;
 use App\Filament\Resources\TicketResource\RelationManagers\CategoriesRelationManager;
 
 class TicketResource extends Resource
@@ -65,8 +65,22 @@ class TicketResource extends Resource
                     ->description(fn(Ticket $record) : ?string => $record?->description ?? null)
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('status')->badge(),
-                TextColumn::make('priority')->badge(),
+                SelectColumn::make('status')
+                    ->options(Ticket::STATUS),
+                // TextColumn::make('status')
+                //     ->badge()
+                //     ->colors([
+                //         'warning' => self::$model::STATUS['Archived'],
+                //         'success' => self::$model::STATUS['Open'],
+                //         'danger' => self::$model::STATUS['Closed'],
+                //     ]),
+                TextColumn::make('priority')
+                    ->badge()
+                    ->colors([
+                        'warning' => self::$model::PRIORITY['Medium'],
+                        'success' => self::$model::PRIORITY['Low'],
+                        'danger' => self::$model::PRIORITY['High'],
+                    ]),
                 TextColumn::make('assignedTo.name')
                     ->searchable()
                     ->sortable(),

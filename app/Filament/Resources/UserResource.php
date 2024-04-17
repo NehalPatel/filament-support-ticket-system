@@ -34,7 +34,8 @@ class UserResource extends Resource
                     ->unique(ignoreRecord:true),
                 TextInput::make('password')
                     ->password()
-                    ->required(),
+                    ->required()
+                    ->hiddenOn(['edit']),
             ]);
     }
 
@@ -48,9 +49,13 @@ class UserResource extends Resource
                 TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('roles.name')
+                    ->badge(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('role')
+                    ->relationship('roles', 'name')
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
